@@ -163,6 +163,18 @@ app.get('/api/students', (req, res) => {
   });
 });
 
+app.get('/api/members/:id', (req, res) => {
+
+  db.get('SELECT id,username,email,password FROM students WHERE id=?', [req.params.id], (err, row) => {
+
+    if (err) return res.status(500).json({error: err.message});
+
+    res.json(row);
+
+  });
+
+});
+
 app.post('/api/students', (req, res) => {
     const { username, email, password } = req.body;
     const stmt = `INSERT INTO students (username, email, password) VALUES (?, ?, ?)`;
@@ -356,6 +368,13 @@ app.get('/api/books/leaderboard', (req, res) => {
 
 
 // ------------------- Loans API ------------------
+app.get('/api/loans/active-loans-count', (req, res) => {
+    db.get('SELECT COUNT(*) as count FROM loans', [], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(row);
+    });
+});
+
 app.get('/api/loans/:student_id', (req, res) => {
     const query = `SELECT books.*, loans.borrowed_time FROM loans JOIN books ON loans.book_id = books.id WHERE loans.student_id = ?`;
     db.all(query, [req.params.student_id], (err, rows) => {
@@ -380,13 +399,6 @@ app.delete('/api/loans/:student_id/:book_id', (req, res) => {
 
         libraryNamespace.emit('library_update', { action: 'returned', bookId: book_id });
         res.json({ message: "Returned successfully." });
-    });
-});
-
-app.get('/api/loans/active-loans-count', (req, res) => {
-    db.get('SELECT COUNT(*) as count FROM loans', [], (err, row) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ count: row.count });
     });
 });
 

@@ -52,7 +52,7 @@ const ReportGenerationScreen = ({ navigation }: Props) => {
             setStats({
                 totalStudents: students.length,
                 totalBooks: books.length,
-                activeBorrows: loanCountData.count
+                activeBorrows: loanCountData.length,
             });
             setGenreData(formattedGenreData);
             setPopularBooks(leaderboard.slice(0, 5)); // Show top 5
